@@ -79,8 +79,10 @@ validate_outputs() // in engine/
 ```
 
 [P1][Scheduler] questions:
+- term - messages, prompts, sequence, seq_group. What's their differences?
 - What is the preprocess prompt -> seg_group do? what extra info added to the prompt?
-- What is the scheduler do when we add seg_group (a prompt) to the waiting queue?
+- What is the scheduler do when we add seg_group (a prompt) to the waiting queue? How's the scheduler work?
+- there is a loop in run_engine() which waits for all unfinished_requests output, why this doesn't include the requests not coming from the current call?
 - The request seems goes through a long journey, from entrypoint -> engine -> scheduler -> run, what's the latency of the scheduler?
 
 [P1][Executor] questions:

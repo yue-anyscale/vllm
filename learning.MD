@@ -84,6 +84,7 @@ validate_outputs() // in engine/
 - What is the scheduler do when we add seg_group (a prompt) to the waiting queue? How's the scheduler work?
 - there is a loop in run_engine() which waits for all unfinished_requests output, why this doesn't include the requests not coming from the current call?
 - The request seems goes through a long journey, from entrypoint -> engine -> scheduler -> run, what's the latency of the scheduler?
+- what data type (precision) it's using by default? what quantization it supports?
 
 [P1][Executor] questions:
 - Code point & how do we determine which executor to use when we call execute_model()?

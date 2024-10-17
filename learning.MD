@@ -1,6 +1,6 @@
 # Basic workflow learnings
 
-## General workflow
+## Use cases
 
 **Offline Inference workload**
 - one example usage is in offline_inference_XXX.py:

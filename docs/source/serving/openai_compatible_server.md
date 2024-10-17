@@ -25,6 +25,18 @@ completion = client.chat.completions.create(
 print(completion.choices[0].message)
 ```
 
+When the user calls client.chat.completions.create() in the OpenAI Python client, this is what happens under the hood:
+
+The Python client sends a POST request to http://localhost:8000/v1/chat/completions with a payload like this:
+```
+{
+  "model": "NousResearch/Meta-Llama-3-8B-Instruct",
+  "messages": [
+    {"role": "user", "content": "Hello!"}
+  ]
+}
+```
+
 ## API Reference
 Please see the [OpenAI API Reference](https://platform.openai.com/docs/api-reference) for more information on the API. We support all parameters except:
 - Chat: `tools`, and `tool_choice`.

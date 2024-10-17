@@ -18,7 +18,7 @@ import base64
 import requests
 from openai import OpenAI
 
-from vllm.assets.audio import AudioAsset
+# from vllm.assets.audio import AudioAsset
 from vllm.utils import FlexibleArgumentParser
 
 # Modify OpenAI's API key and API base to use vLLM's API server.
@@ -121,28 +121,58 @@ def run_multi_image() -> None:
     image_url_duck = "https://upload.wikimedia.org/wikipedia/commons/d/da/2015_Kaczka_krzy%C5%BCowka_w_wodzie_%28samiec%29.jpg"
     image_url_lion = "https://upload.wikimedia.org/wikipedia/commons/7/77/002_The_lion_king_Snyggve_in_the_Serengeti_National_Park_Photo_by_Giles_Laurent.jpg"
     chat_completion_from_url = client.chat.completions.create(
-        messages=[{
-            "role":
-            "user",
+        # messages=[{
+        #     "role":
+        #     "user",
+        #     "content": [
+        #         {
+        #             "type": "text",
+        #             "text": "What are the animals in these images?"
+        #         },
+        #         {
+        #             "type": "image_url",
+        #             "image_url": {
+        #                 "url": image_url_duck
+        #             },
+        #         },
+        #         {
+        #             "type": "image_url",
+        #             "image_url": {
+        #                 "url": image_url_lion
+        #             },
+        #         },
+        #     ],
+        # }],
+        messages = [
+        {
+            "role": "system",
+            "content": "You are a helpful e-commerce assistant that is specialized in attribute extraction. You are designed to output the attribute extraction result in a JSON dictionary with two fields:\n- \"reasoning\": a short explanation about how you figure out the correct attribute value.\n- \"value\": the extracted attribute value."
+        },
+        {
+            "role": "user",
             "content": [
-                {
-                    "type": "text",
-                    "text": "What are the animals in these images?"
-                },
-                {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": image_url_duck
-                    },
-                },
-                {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": image_url_lion
-                    },
-                },
-            ],
-        }],
+            "Your task is to extract the organic_claim for a given product from various data sources.\n\norganic_claim definition:\nA boolean. A product is considered \"organic\" if:\n  - Organic language or certifications present on packaging. Certifications/language includes,but is not limited to:\n    - USDA organic\n    - OCIA organic\n    - State-specific organic certifications, such as CCOF\n    - 'Certified naturally grown'\n    - Demeter certified organic\n    - Certified Organic by QAI (Quality Assurance International)\n  - If Organic language or certifications are present in title, description, details or image, then the product is considered organic.\n\nextraction_guideline:\nProduct Images: First, search for visual representations or symbols that indicate certified organic or text labels on the product packaging like:\n  - \"USDA organic\"\n  - \"OCIA organic\"\n  - \"CCOF\"\n  - \"Certified naturally grown\"\n  - \"Demeter certified organic\"\n  - Certified Organic by QAI (Quality Assurance International)\nProduct Name: Next, scan for organic related keywords or certifications like \"organic\", \"USDA organic\", \"OCIA organic\", \"CCOF\", \"Certified naturally grown\", \"Demeter certified organic\"\nIf Organic language or certifications are present in title, description, details or image, then TRUE.\nNote a product is considered \"organic\" only when there is some explicit claim that the product itself is organic. A product with a few organic ingredients does not qualify as a valid claim.\n\nLet's think step-by-step. I'm going to tip $1000 for accurate outputs.\n\nThe given product images and the product data sources below are where you need to extract the organic_claim.\n---------\nproduct name: Splash Mandarin Orange Water Beverage\nproduct description: Water doesn\u2019t have to be boring. Do yourself a flavor, hydrate with delicious, Mandarin Orange flavored Splash Refresher. It\u2019s like water - but actually good. Quench your thirst and tease your taste buds any time. Splash Refresher has zero sugars for a guilt-free option, making it the refreshiest alternative to other sugary or high-calorie drinks. \u2022 Water doesn\u2019t have to be boring. do yourself a flavor and hydrate with zero sugar and delicious, mandarin orange flavored splash refresher, \u2022 Splash refresher has zero sugar for a guilt-free option, making it a craveable refreshiest alternative to other sugary or high-calorie drinks., \u2022 Quench your thirst and tease your taste buds any time of day, \u2022 Try all of our amazing flavors: acai grape, lemon, orange, wild berry and pineapple mango, \u2022 6 pack of 16.9 fl oz splash refresher flavored water bottles are perfectly sized, in recyclable* (this product may not be recyclable in your area) plastic bottles for on-the-go hydration, \u2022 It\u2019s like water - but good, \u2022 You may receive packaging with either appearance for a limited time. purified water, less than 0.5% of natural flavors, citric acid (to preserve freshness), sodium polyphosphate, magnesium sulfate, potassium sorbate (to preserve freshness), potassium benzoate (to preserve freshness), sucralose, acesulfame potassium, calcium disodium edta, zinc sulfate warning: cap is a small part and poses a choking hazard, particularly for children.\nproduct category: Beverages > Water > Still Water > Flavored or Infused Waters\n\nOutput:\n",
+            {
+                "image_url": "https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_2933bafa-072f-45bd-9ee6-0118303731df.jpg"
+            },
+            {
+                "image_url": "https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_7b5d8590-4f0e-4e6a-acfd-4716a7b089e7.jpg"
+            },
+            {
+                "image_url": "https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_59bd0984-0386-4daf-ba7a-d152120ad265.jpg"
+            },
+            {
+                "image_url": "https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_35c903b3-37e2-4319-931b-67b219214a02.jpg"
+            },
+            {
+                "image_url": "https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_d816dad8-89bd-4b60-947d-031eaba75bd4.jpg"
+            },
+            {
+                "image_url": "https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_cf8e36cc-aa01-4e06-9155-7eed29cfb118.jpg"
+            }
+            ]
+        }
+        ],
         model=model,
         max_tokens=64,
     )
@@ -152,67 +182,67 @@ def run_multi_image() -> None:
 
 
 # Audio input inference
-def run_audio() -> None:
-    # Any format supported by librosa is supported
-    audio_url = AudioAsset("winning_call").url
+# def run_audio() -> None:
+#     # Any format supported by librosa is supported
+#     audio_url = AudioAsset("winning_call").url
 
-    # Use audio url in the payload
-    chat_completion_from_url = client.chat.completions.create(
-        messages=[{
-            "role":
-            "user",
-            "content": [
-                {
-                    "type": "text",
-                    "text": "What's in this audio?"
-                },
-                {
-                    "type": "audio_url",
-                    "audio_url": {
-                        "url": audio_url
-                    },
-                },
-            ],
-        }],
-        model=model,
-        max_tokens=64,
-    )
+#     # Use audio url in the payload
+#     chat_completion_from_url = client.chat.completions.create(
+#         messages=[{
+#             "role":
+#             "user",
+#             "content": [
+#                 {
+#                     "type": "text",
+#                     "text": "What's in this audio?"
+#                 },
+#                 {
+#                     "type": "audio_url",
+#                     "audio_url": {
+#                         "url": audio_url
+#                     },
+#                 },
+#             ],
+#         }],
+#         model=model,
+#         max_tokens=64,
+#     )
 
-    result = chat_completion_from_url.choices[0].message.content
-    print("Chat completion output from audio url:", result)
+#     result = chat_completion_from_url.choices[0].message.content
+#     print("Chat completion output from audio url:", result)
 
-    audio_base64 = encode_base64_content_from_url(audio_url)
-    chat_completion_from_base64 = client.chat.completions.create(
-        messages=[{
-            "role":
-            "user",
-            "content": [
-                {
-                    "type": "text",
-                    "text": "What's in this audio?"
-                },
-                {
-                    "type": "audio_url",
-                    "audio_url": {
-                        # Any format supported by librosa is supported
-                        "url": f"data:audio/ogg;base64,{audio_base64}"
-                    },
-                },
-            ],
-        }],
-        model=model,
-        max_tokens=64,
-    )
+#     audio_base64 = encode_base64_content_from_url(audio_url)
+#     chat_completion_from_base64 = client.chat.completions.create(
+#         messages=[{
+#             "role":
+#             "user",
+#             "content": [
+#                 {
+#                     "type": "text",
+#                     "text": "What's in this audio?"
+#                 },
+#                 {
+#                     "type": "audio_url",
+#                     "audio_url": {
+#                         # Any format supported by librosa is supported
+#                         "url": f"data:audio/ogg;base64,{audio_base64}"
+#                     },
+#                 },
+#             ],
+#         }],
+#         model=model,
+#         max_tokens=64,
+#     )
 
-    result = chat_completion_from_base64.choices[0].message.content
-    print("Chat completion output from base64 encoded audio:", result)
+#     result = chat_completion_from_base64.choices[0].message.content
+#     print("Chat completion output from base64 encoded audio:", result)
 
 
 example_function_map = {
     "text-only": run_text_only,
     "single-image": run_single_image,
     "multi-image": run_multi_image,
-    "audio": run_audio,
+    # "audio": run_audio,
 }
 
 

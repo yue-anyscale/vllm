@@ -43,8 +43,10 @@ class LLM:
     this class generates texts from the model, using an intelligent batching
     mechanism and efficient memory management.
 
+    // The args we want to pass into the LLM, e.g. which model, which tokenizer, etc. [P2] need to learn what's each args controls.
+
     Args:
-        model: The name or path of a HuggingFace Transformers model.
+        model: The name or path of a HuggingFace Transformers model. Comes from https://huggingface.co/models?sort=trending.
         tokenizer: The name or path of a HuggingFace Transformers tokenizer.
         tokenizer_mode: The tokenizer mode. "auto" will use the fast tokenizer
             if available, and "slow" will always use the slow tokenizer.
@@ -253,6 +255,8 @@ class LLM:
     ) -> List[RequestOutput]:
         ...
 
+    # The @overload decorator allows you to specify multiple versions of a function's signature,
+    # these @overload declarations do not provide actual implementations.
     @overload
     def generate(
         self,
@@ -266,6 +270,7 @@ class LLM:
     ) -> List[RequestOutput]:
         ...
 
+    # This is the actual implementation of the generate function.
     @deprecate_kwargs(
         "prompt_token_ids",
         is_deprecated=lambda: LLM.DEPRECATE_LEGACY,
@@ -531,6 +536,7 @@ class LLM:
             # NOTE: _parse_chat_message_content_parts() currently doesn't
             # handle mm_processor_kwargs, since there is no implementation in
             # the chat message parsing for it.
+            # What happens when the input message is not text but a image_url???
             conversation, mm_data = parse_chat_messages(
                 msgs, model_config, tokenizer)
 
@@ -808,6 +814,7 @@ class LLM:
                 sp.output_kind = RequestOutputKind.FINAL_ONLY
 
         # Add requests to the engine.
+        # Add request for each of the prompt. Tracedown the add_request, the code is in engine/
         for i, prompt in enumerate(prompts):
             self._add_request(
                 prompt,
@@ -857,6 +864,9 @@ class LLM:
             whitespace_pattern=guided_options.guided_whitespace_pattern)
         return params
 
+    # When this is being called, is this only process the prompts being added in the same generate() round?
+    # question - by briefly reading below code - this will process all unfinished requests that is in the scheduler? 
+    # in this case, why the request_output will not mix prompts being added by others? (from other's generate() call)
     def _run_engine(
             self, *, use_tqdm: bool
     ) -> List[Union[RequestOutput, EmbeddingRequestOutput]]:
@@ -876,6 +886,7 @@ class LLM:
         total_in_toks = 0
         total_out_toks = 0
         while self.llm_engine.has_unfinished_requests():
+            # question - The step() calling is doing a decode iteration, in this case, where is the prefill happens?
             step_outputs = self.llm_engine.step()
             for output in step_outputs:
                 if output.finished:

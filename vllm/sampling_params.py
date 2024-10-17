@@ -102,6 +102,8 @@ class SamplingParams(
     API (https://platform.openai.com/docs/api-reference/completions/create).
     In addition, we support beam search, which is not supported by OpenAI.
 
+    // The passed in params affect the sampler results, like randomness. [P2] More detailed info need to learn - how's the sampler designed, how's the params affect the sampler results.
+    
     Args:
         n: Number of output sequences to return for the given prompt.
         best_of: Number of output sequences that are generated from the prompt.

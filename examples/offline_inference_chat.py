@@ -61,10 +61,11 @@ conversation = [
 conversations = [conversation for _ in range(10)]
 
 # We turn on tqdm progress bar to verify it's indeed running batch inference
-outputs = llm.chat(messages=conversations,
-                   sampling_params=sampling_params,
-                   use_tqdm=True)
-print_outputs(outputs)
+# tqdm is a popular Python library that provides a visual progress bar, which is especially useful when iterating over loops or handling lengthy operations. It shows how much of the task has been completed, the estimated time remaining, and the speed of processing
+# outputs = llm.chat(messages=conversations,
+#                    sampling_params=sampling_params,
+#                    use_tqdm=True)
+# print_outputs(outputs)
 
 # A chat template can be optionally supplied.
 # If not, the model will use its default chat template.

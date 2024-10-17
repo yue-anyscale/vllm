@@ -301,7 +301,7 @@ async def async_request_openai_completions(
         pbar.update(1)
     return output
 
-
+# This is the place that implements the vllm's openAI compatible API.
 async def async_request_openai_chat_completions(
     request_func_input: RequestFuncInput,
     pbar: Optional[tqdm] = None,

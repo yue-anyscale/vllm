@@ -80,11 +80,63 @@ validate_outputs() // in engine/
 
 [P1][Scheduler] questions:
 - term - messages, prompts, sequence, seq_group. What's their differences?
-- What is the preprocess prompt -> seg_group do? what extra info added to the prompt?
+```
+from transformers import AutoTokenizer
+t = AutoTokenizer.from_pretrained("neuralmagic/Meta-Llama-3-8B-Instruct-FP8")
+messages = [
+	{"role": "system", "content": "You are an assistant"},
+	{"role": "user", "content": "What's your name?"}
+]
+t.apply_chat_template(messages)
+t.apply_chat_template(messages, tokenize=False)
+```
+encourage use messages as input.
+prompt: has bos & eos, etc, a processed string for the message
+sequence: see the sequence struct, it includes not only prompt, tokens, status (prefill, decode), etc
+seq_group: will deprecate inside engine, will be handled in entrypoint /client side, it's for the sampler (n, best_of)
+
+- What is the preprocess prompt -> seg_group do? what extra info added to the prompt? solved above
 - What is the scheduler do when we add seg_group (a prompt) to the waiting queue? How's the scheduler work?
+    - every coming request will trigger schedule(), which process the waiting requests
+    - default scheduler: prioritize prefill, will not mix prefill and decode
+    - chunked prefill scheduler: mix prefill and decode, not waste bandwidth
+    - budget: 16386, max batch size, e.g. 2000 tokens per prompt, 16386 can process 16386 / 2000 prompts/
 - there is a loop in run_engine() which waits for all unfinished_requests output, why this doesn't include the requests not coming from the current call?
+    - The run_engine() in entrypoint is actually offline, only the offline use case call this.
+    - the online use case call the http server, which will not call that
+    - The online and offline meets in engine.
 - The request seems goes through a long journey, from entrypoint -> engine -> scheduler -> run, what's the latency of the scheduler?
+    - Yes, previously 
+        - the API server cost a lot (as it's in the same process as the executor), now removed
+        - the scheduler cost, the multi step (Will implemented) helped reduce the schedule times, now solved
+        - preprocess, prompt, seq_group.
 - what data type (precision) it's using by default? what quantization it supports?
+    - it's depends on model, see the hugging face page - model config - dtype - most bf16
+- quantization
+    - vllm quantization doc
+    ```
+    [1.8, 2.5] simple example of quantize to int:
+[18, 25], scale=0.1
+
+[2.345678, 3.4556778] more complex example:
+[0, 3.4556778-2.345678]*scale
+
+[[...], [...], [...]] // also have this cases, store more scales and offset
+
+// For some case like w8a16: weights in int8, activation in fp16
+// as activation is more hard to quantize (because they are not static, they are runtime determined) - sometimes use calibration set to determine if we want to quantize activation.
+// for matmul w8a16, a just read as fp16, weights use the scale and offset like:
+w16 = (w8 * scale) + offset
+// to convert to w16, and then use the tensor core fp16 to calculate
+a16
+// the result is usually float, we convert to fp16 as the output for next step activation usage.
+o32 -> o16
+
+
+w8a16
+w8a8
+    ```
+
 
 [P1][Executor] questions:
 - Code point & how do we determine which executor to use when we call execute_model()?

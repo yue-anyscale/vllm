@@ -409,6 +409,7 @@ class Scheduler:
         """The number of new tokens."""
         return 1
 
+    # This is the actual action that adds to the scheduler. 
     def add_seq_group(self, seq_group: SequenceGroup) -> None:
         # Add sequence groups to the waiting queue.
         self.waiting.append(seq_group)

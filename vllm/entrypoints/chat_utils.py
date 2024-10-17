@@ -405,6 +405,7 @@ def _parse_chat_message_content_parts(
         if part_type == "text":
             text = _TextParser(part)["text"]
             texts.append(text)
+        # This is the logic that distinguish it's a text / image / audio.
         elif part_type == "image_url":
             image_url = _ImageParser(part)["image_url"]
 

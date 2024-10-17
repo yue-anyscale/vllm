@@ -694,6 +694,7 @@ class LLMEngine:
             for scheduler in self.scheduler
         ]
         min_cost_scheduler = self.scheduler[costs.index(min(costs))]
+        # This is the caller from engine to core scheduler - to add the request.
         min_cost_scheduler.add_seq_group(seq_group)
 
     def stop_remote_worker_execution_loop(self) -> None:
@@ -728,6 +729,7 @@ class LLMEngine:
     ) -> None:
         ...
 
+    # The add_request entry point in engine.
     @deprecate_kwargs(
         "inputs",
         additional_message="Please use the 'prompt' parameter instead.",

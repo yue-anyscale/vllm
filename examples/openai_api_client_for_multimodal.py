@@ -18,7 +18,7 @@ import base64
 import requests
 from openai import OpenAI
 
-from vllm.assets.audio import AudioAsset
+# from vllm.assets.audio import AudioAsset
 from vllm.utils import FlexibleArgumentParser
 
 # Modify OpenAI's API key and API base to use vLLM's API server.
@@ -152,67 +152,67 @@ def run_multi_image() -> None:
 
 
 # Audio input inference
-def run_audio() -> None:
-    # Any format supported by librosa is supported
-    audio_url = AudioAsset("winning_call").url
+# def run_audio() -> None:
+#     # Any format supported by librosa is supported
+#     audio_url = AudioAsset("winning_call").url
 
-    # Use audio url in the payload
-    chat_completion_from_url = client.chat.completions.create(
-        messages=[{
-            "role":
-            "user",
-            "content": [
-                {
-                    "type": "text",
-                    "text": "What's in this audio?"
-                },
-                {
-                    "type": "audio_url",
-                    "audio_url": {
-                        "url": audio_url
-                    },
-                },
-            ],
-        }],
-        model=model,
-        max_tokens=64,
-    )
+#     # Use audio url in the payload
+#     chat_completion_from_url = client.chat.completions.create(
+#         messages=[{
+#             "role":
+#             "user",
+#             "content": [
+#                 {
+#                     "type": "text",
+#                     "text": "What's in this audio?"
+#                 },
+#                 {
+#                     "type": "audio_url",
+#                     "audio_url": {
+#                         "url": audio_url
+#                     },
+#                 },
+#             ],
+#         }],
+#         model=model,
+#         max_tokens=64,
+#     )
 
-    result = chat_completion_from_url.choices[0].message.content
-    print("Chat completion output from audio url:", result)
+#     result = chat_completion_from_url.choices[0].message.content
+#     print("Chat completion output from audio url:", result)
 
-    audio_base64 = encode_base64_content_from_url(audio_url)
-    chat_completion_from_base64 = client.chat.completions.create(
-        messages=[{
-            "role":
-            "user",
-            "content": [
-                {
-                    "type": "text",
-                    "text": "What's in this audio?"
-                },
-                {
-                    "type": "audio_url",
-                    "audio_url": {
-                        # Any format supported by librosa is supported
-                        "url": f"data:audio/ogg;base64,{audio_base64}"
-                    },
-                },
-            ],
-        }],
-        model=model,
-        max_tokens=64,
-    )
+#     audio_base64 = encode_base64_content_from_url(audio_url)
+#     chat_completion_from_base64 = client.chat.completions.create(
+#         messages=[{
+#             "role":
+#             "user",
+#             "content": [
+#                 {
+#                     "type": "text",
+#                     "text": "What's in this audio?"
+#                 },
+#                 {
+#                     "type": "audio_url",
+#                     "audio_url": {
+#                         # Any format supported by librosa is supported
+#                         "url": f"data:audio/ogg;base64,{audio_base64}"
+#                     },
+#                 },
+#             ],
+#         }],
+#         model=model,
+#         max_tokens=64,
+#     )
 
-    result = chat_completion_from_base64.choices[0].message.content
-    print("Chat completion output from base64 encoded audio:", result)
+#     result = chat_completion_from_base64.choices[0].message.content
+#     print("Chat completion output from base64 encoded audio:", result)
 
 
 example_function_map = {
     "text-only": run_text_only,
     "single-image": run_single_image,
     "multi-image": run_multi_image,
-    "audio": run_audio,
+    # "audio": run_audio,
 }
 
 

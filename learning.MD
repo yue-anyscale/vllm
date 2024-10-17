@@ -31,9 +31,6 @@ run the python script in another console, it will sends request to the server.
 The python code is using OpenAI API, so that customers don't need to change their code.
 
 
-[P0][General questions]:
-- My machine has above 22 GB GPU memory, why it OOM when I run offline_inference_pixtral which is 12B?
-
 ## Detailed Code Walkthrough
 
 ### Request life journey - llm.generate()

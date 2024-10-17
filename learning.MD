@@ -3,7 +3,7 @@
 ## General workflow
 
 **Offline Inference workload**
-- I see one example usage is in offline_inference_XXX.py, is this how it works?:
+- one example usage is in offline_inference_XXX.py:
 ```
 llm = LLM(model="meta-llama/Meta-Llama-3-8B-Instruct")
 ```
@@ -16,9 +16,10 @@ llm = LLM(model="meta-llama/Meta-Llama-3-8B-Instruct")
 
 // step 2 - when it runs llm.chat() which is sending request
 // This will send request to the started server
-llm.chat(prompts)
+llm.chat(messages) // this will process the messages to prompts, and call llm.generate()
+// llm.generate(prompts)
 
-// step 3 - when the script finished run, the LLM class has a mechanism to clean up resources, including shutting down the background server?
+// step 3 - when the script finished run, the LLM class has a mechanism to clean up resources, including shutting down the background server
 ```
 
 
@@ -28,6 +29,10 @@ run vllm serve in a console:
 example `vllm serve meta-llama/Meta-Llama-3-8B-Instruct`
 
 run the python script in another console, it will sends request to the server.
+// example - a script running openai api
+client = OpenAI(local server address, keyword)
+client.chat.completion.create(messages) // vllm provides http openAI completion and chat api, it will send the messages as payload to the vllm server, the backend will call the vllm.chat under the hood.
+
 The python code is using OpenAI API, so that customers don't need to change their code.
 
 

@@ -117,6 +117,11 @@ class GPUModelRunner:
             self.encoder_cache.pop(req_id, None)
 
         # Free the cached encoder outputs.
+        # question: this is where the encoder_output actually stored in, self.encoder_cache.get(req_id).get(input_id)
+        # pop from encoder_cache make the embedding disappear from the cache, as we implement embedding cache, image
+        # with same mm_hash will use the same embedding, does other request's same image rely on accessing the embedding
+        # here? I guess not, I guess request1 -> input1 -> embedding will be equal to request2 -> input1 -> embedding if
+        # they are the same image, which codepointer do this? other changes are needed i guess with the mm_hash.
         for req_id, input_id in scheduler_output.free_encoder_input_ids:
             encoder_outputs = self.encoder_cache.get(req_id)
             if encoder_outputs is not None:

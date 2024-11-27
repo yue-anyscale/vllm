@@ -1,15 +1,24 @@
 from typing import Dict, List, Set, Tuple
+from collections import OrderedDict
 
 from vllm.v1.request import Request
 
+class CacheEntry:
+    def __init__(self, num_slots: int):
+        self.num_slots = num_slots # Number of slots used by this entry.
+        self.num_in_use = 0 # How many input are using this entry, the input can from different requests.
 
+# Assumptions:
+# - request.mm_hash[input_id] is the hash value for the image #input_id.
+
+# Questions:
+# - where is the code pointer that replace the placeholder with the encoder output?
 class EncoderCacheManager:
 
     def __init__(self, cache_size: int):
         self.cache_size = cache_size
-        self.num_free_slots = cache_size
-        # req_id -> cached input ids
-        self.cached: Dict[str, Set[int]] = {}
+        # hash -> CacheEntry
+        self.cached: Dict[int, CacheEntry] = OrderedDict()
         # List of [req_id, input_id]
         self.freed: List[Tuple[str, int]] = []
 
